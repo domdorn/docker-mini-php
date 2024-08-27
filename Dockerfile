@@ -1,11 +1,6 @@
-FROM alpine:3.3
+FROM alpine:3.20
 
-RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-	&& apk add --update \
-		lighttpd \
-		php-fpm \
-		runit@testing \
-	&& rm -rf /var/cache/apk/*
+RUN apk add --update lighttpd php-fpm && rm -Rf /var/cache/apk/*
 
 # set up folders, configure lighttpd and php-fpm
 RUN mkdir -p /app/htdocs /app/error /etc/service/lighttpd /etc/service/php-fpm \
@@ -16,7 +11,7 @@ RUN mkdir -p /app/htdocs /app/error /etc/service/lighttpd /etc/service/php-fpm \
 		/etc/lighttpd/lighttpd.conf \
 	&& sed -i -E \
 		-e 's/user\s*=\s*nobody/user = lighttpd/' \
-		/etc/php/php-fpm.conf \
+		/etc/php83/php-fpm.conf \
 	&& touch /var/log/php-fpm.log \
 	&& chown -R lighttpd /var/log/php-fpm.log \
 	&& echo -e "#!/bin/sh\nlighttpd -D -f /etc/lighttpd/lighttpd.conf" > /etc/service/lighttpd/run \
